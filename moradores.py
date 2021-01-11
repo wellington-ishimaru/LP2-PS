@@ -1,5 +1,6 @@
 import _sqlite3
 
+
 class Moradores:
 
     def __init__(self, nome, carro):
@@ -26,7 +27,7 @@ class Moradores:
         carro = input("Digite o carro do morador: ")
         morador = Moradores(nome, carro)
         try:  # trata a duplicidade de nomes
-            c.execute("INSERT INTO moradores VALUES(NULL,?,?)",morador.morador)
+            c.execute("INSERT INTO moradores VALUES(NULL,?,?)", morador.morador)
             conn.commit()
             print("Morador adicionado com sucesso!")
         except _sqlite3.IntegrityError:
@@ -44,27 +45,33 @@ class Moradores:
             nome_anterior = (input("Digite o nome do morador que deseja alterar: "), )
             c.execute("SELECT * FROM moradores WHERE nome=?", nome_anterior)
             busca = c.fetchone()
-            if busca == None:
+            # trata o erro quando não houver nenhuma ocorrência com esses dados, nesses casos o
+            # fetchone retorna None e pelas boas práticas não é correto passar None na comparação do IF
+            try:
+                if len(busca) > 0:
+                    novo_nome = (input("Digite o novo nome do morador: "), nome_anterior[0])
+                    c.execute("UPDATE moradores set Nome=? where Nome=?", novo_nome)
+                    c.execute("Update estacionamento set Ocupante=? where Ocupante=?", novo_nome)
+                    conn.commit()
+                    print("Nome atualizado com sucesso!")
+            except TypeError:
                 print(f"Não foi encontrado um morador com esse nome {nome_anterior[0]}")
-            else:
-                novo_nome = (input("Digite o novo nome do morador: "), nome_anterior[0])
-                c.execute("UPDATE moradores set Nome=? where Nome=?", novo_nome)
-                conn.commit()
-                print("Nome atualizado com sucesso!")
         elif opcao == 2:
             nome = input("Digite o nome do morador que deseja  alterar: ")
             carro = input("Digite o nome do carro que deseja alterar: ")
             nome_e_carro = (nome, carro)
             c.execute("SELECT * FROM moradores WHERE nome=? and Carro=?;", nome_e_carro)
             busca = c.fetchone()
-            if busca == None:
+            # trata o erro quando não houver nenhuma ocorrência com esses dados, nesses casos o
+            # fetchone retorna None e pelas boas práticas não é correto passar None na comparação do IF
+            try:
+                if len(busca) > 0:
+                    novo_carro = (input("Digite o novo carro do morador: "), nome)
+                    c.execute("UPDATE moradores set Carro=? where Nome=?", novo_carro)
+                    conn.commit()
+                    print("Nome atualizado com sucesso!")
+            except TypeError:
                 print(f"Não foi encontrado um morador com nome {nome} e carro {carro}")
-            else:
-                novo_carro = (input("Digite o novo carro do morador: "), nome)
-                c.execute("UPDATE moradores set Carro=? where Nome=?", novo_carro)
-                conn.commit()
-                print("Nome atualizado com sucesso!")
         else:
             print("Opcao invalida!")
         conn.close()
-

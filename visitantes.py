@@ -1,5 +1,6 @@
 import _sqlite3
 
+
 class Visitantes:
     def __init__(self, nome, carro):
         self.nome = nome
@@ -43,26 +44,32 @@ class Visitantes:
             nome_anterior = (input("Digite o nome do visitante que deseja alterar: "),)
             c.execute("SELECT * FROM visitantes WHERE nome=?", nome_anterior)
             busca = c.fetchone()
-            if busca == None:
+            # trata o erro quando não houver nenhuma ocorrência com esses dados, nesses casos o
+            # fetchone retorna None e pelas boas práticas não é correto passar None na comparação do IF
+            try:
+                if len(busca) > 0:
+                    novo_nome = (input("Digite o novo nome do visitante: "), nome_anterior[0])
+                    c.execute("UPDATE visitantes set Nome=? where Nome=?", novo_nome)
+                    conn.commit()
+                    print("Nome atualizado com sucesso!")
+            except TypeError:
                 print(f"Não foi encontrado um visitante com esse nome {nome_anterior[0]}")
-            else:
-                novo_nome = (input("Digite o novo nome do visitante: "), nome_anterior[0])
-                c.execute("UPDATE visitantes set Nome=? where Nome=?", novo_nome)
-                conn.commit()
-                print("Nome atualizado com sucesso!")
         elif opcao == 2:
             nome = input("Digite o nome do visitante que deseja  alterar: ")
             carro = input("Digite o nome do carro que deseja alterar: ")
             nome_e_carro = (nome, carro)
             c.execute("SELECT * FROM visitantes WHERE nome=? and Carro=?;", nome_e_carro)
             busca = c.fetchone()
-            if busca == None:
+            # trata o erro quando não houver nenhuma ocorrência com esses dados, nesses casos o
+            # fetchone retorna None e pelas boas práticas não é correto passar None na comparação do IF
+            try:
+                if len(busca) > 0:
+                    novo_carro = (input("Digite o novo carro do visitante: "), nome)
+                    c.execute("UPDATE visitantes set Carro=? where Nome=?", novo_carro)
+                    conn.commit()
+                    print("Nome atualizado com sucesso!")
+            except TypeError:
                 print(f"Não foi encontrado nenhum visitante com nome {nome} e carro {carro}")
-            else:
-                novo_carro = (input("Digite o novo carro do visitante: "), nome)
-                c.execute("UPDATE visitantes set Carro=? where Nome=?", novo_carro)
-                conn.commit()
-                print("Nome atualizado com sucesso!")
         else:
             print("Opcao invalida!")
         conn.close()

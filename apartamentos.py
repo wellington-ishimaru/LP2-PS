@@ -1,6 +1,7 @@
 import _sqlite3
 from sqlite3 import Error
 
+
 class Apartamentos:
 
     """Cria uma lista de tuplas que recebe 3 valores: a
@@ -24,9 +25,10 @@ class Apartamentos:
         qtde = int(input("Informe a quantidade de apartamentos: "))
         bloco = input("Informe o nome do bloco: ")
         ap = Apartamentos(qtde, bloco)
-        try:#trata duplicidade de dados
-            c.execute("CREATE TABLE IF NOT EXISTS apartamentos (Id INTEGER PRIMARY KEY"
-                      " AUTOINCREMENT, Numero INT Bloco TEXT COLLATE NOCASE, Ocupante TEXT, UNIQUE (Numero, Bloco)"
+        # trata duplicidade de dados
+        try:
+            c.execute("CREATE TABLE IF NOT EXISTS apartamentos (Numero INTEGER PRIMARY KEY"
+                      " AUTOINCREMENT, Bloco TEXT COLLATE NOCASE, Ocupante TEXT, UNIQUE (Numero, Bloco)"
                       " FOREIGN KEY (Numero) REFERENCES moradores(ID))")
             c.executemany("INSERT INTO apartamentos VALUES(null,?,?)", ap.apartamentos)
             conn.commit()
@@ -42,21 +44,24 @@ class Apartamentos:
         bloco = (input("Digite o bloco do apartamento: "), 'Apartamento vago')
         c.execute("SELECT * FROM apartamentos WHERE bloco=? AND ocupante=?;", bloco)
         busca_apt = c.fetchone()
-        if busca_apt == None:
+        try:
+            if len(busca_apt) > 0:
+                nome = (input("Digite o nome do morador: "),)
+                c.execute("SELECT * FROM moradores WHERE Nome=?", nome)
+                busca_mor = c.fetchone()
+                try:
+                    if len(busca_mor) > 0:
+                        c.execute("UPDATE apartamentos set ocupante=? where numero =?",
+                                  (busca_mor[1], busca_apt[0]))
+                        conn.commit()
+                        c.execute("SELECT * FROM estacionamento INNER JOIN moradores ON "
+                                  "estacionamento.ocupante = moradores.nome")
+                        print("Morador adicionado ao apartamento com sucesso")
+                except TypeError:
+                    print("Morador não encontrado.")
+        except TypeError:
             print("Não há apartamento disponível no momento.")
-        else:
-            nome = (input("Digite o nome do morador: "),)
-            c.execute("SELECT * FROM moradores WHERE Nome=?", nome)
-            busca_mor = c.fetchone()
-            if busca_mor == None:
-                print("Morador não encontrado.")
-            else:
-                c.execute("UPDATE apartamentos set ocupante=? where numero =?",
-                          (busca_mor[1], busca_apt[0]))
-                conn.commit()
-                c.execute("SELECT * FROM estacionamento INNER JOIN moradores ON "
-                          "estacionamento.ocupante = moradores.nome")
-                print("Morador adicionado ao apartamento com sucesso")
+
         conn.close()
 
     @staticmethod
@@ -74,11 +79,12 @@ class Apartamentos:
                     print("Não há ocorrências para busca solicitada.")
                 else:
                     print("+" + "-" * 8 + "+" + "-" * 15 + "+" + "-" * 25 + "+")
-                    print("|"+"{:^8}".format("Numero") + "|" + "{:^15}".format("Bloco") + "|" + "{:^25}".format("Morador") + "|")
+                    print("|"+"{:^8}".format("Numero") + "|" + "{:^15}".format("Bloco") + "|"
+                          + "{:^25}".format("Morador") + "|")
                     print("+" + "-" * 8 + "+" + "-" * 15 + "+" + "-" * 25 + "+")
                     for item in range(len(busca)):
-                        print("|"+"{:^8}".format(busca[item][0]) + "|" + "{:^15}".format(busca[item][1]) + "|" + "{:^25}".format(
-                                busca[item][2]) + "|")
+                        print("|"+"{:^8}".format(busca[item][0]) + "|" + "{:^15}".format(busca[item][1])
+                              + "|" + "{:^25}".format(busca[item][2]) + "|")
                         print("+" + "-" * 8 + "+" + "-" * 15 + "+" + "-" * 25 + "+")
             except _sqlite3.Error:
                 print("Tabela não encontrada.")
@@ -93,11 +99,12 @@ class Apartamentos:
                     print("Não há ocorrências para busca solicitada.")
                 else:
                     print("+" + "-" * 8 + "+" + "-" * 15 + "+" + "-" * 25 + "+")
-                    print("|"+ "{:^8}".format("Numero") + "|" + "{:^15}".format("Bloco") + "|" + "{:^25}".format("Morador") + "|")
-                    print("+"+"-"*8 +"+"+"-"*15 +"+"+"-"*25 + "+")
+                    print("|" + "{:^8}".format("Numero") + "|" + "{:^15}".format("Bloco") + "|"
+                          + "{:^25}".format("Morador") + "|")
+                    print("+"+"-"*8 + "+" + "-"*15 + "+" + "-"*25 + "+")
                     for item in range(len(busca)):
-                        print("|"+ "{:^8}".format(busca[item][0]) + "|" + "{:^15}".format(busca[item][1]) + "|" + "{:^25}".format(
-                                busca[item][2]) + "|")
+                        print("|" + "{:^8}".format(busca[item][0]) + "|" + "{:^15}".format(busca[item][1])
+                              + "|" + "{:^25}".format(busca[item][2]) + "|")
                         print("+" + "-" * 8 + "+" + "-" * 15 + "+" + "-" * 25 + "+")
             except _sqlite3.Error:
                 print("Tabela não encontrada")
@@ -119,7 +126,7 @@ class Apartamentos:
             # trata o erro caso não encontre nenhum dado, o c.fetchone retorna None
             # E pelas boas práticas, não é correto passar o tipo None na comparação do If.
             try:
-                if len(busca) == 0:
+                if len(busca) > 0:
                     c.execute("DELETE FROM apartamentos WHERE Numero=? and Bloco =?", parametro)
                     conn.commit()
                     print("Apartamento excluído com sucesso!")
@@ -129,6 +136,3 @@ class Apartamentos:
         except Error:
             print("Não foi encontrada nenhuma tabela.")
         conn.close()
-
-
-
