@@ -46,75 +46,51 @@ class Estacionamento:
         c = conn.cursor()
         print("(1) Estacionamento para moradores.")
         print("(2) Estacionamento para visitantes.")
-        print("(3) Estacionamento para funcionários.")
         escolha = int(input("Digite uma opção: "))
         if escolha == 1:
             bloco = (input("Digite o bloco do estacionamento: "), 'Estacionamento vago')
             c.execute("SELECT * FROM estacionamento WHERE bloco=? AND ocupante=?;", bloco)
             busca_est = c.fetchone()
-            if busca_est == None:
+            # trata o erro quando não houver nenhuma ocorrência com esses dados, nesses casos o
+            # fetchone retorna None e pelas boas práticas não é correto passar None na comparação do IF
+            try:
+                if len(busca_est) > 0:
+                    nome = input("Digite o nome do morador: ")
+                    carro = input("Digite o carro do morador: ")
+                    nome_carro = (nome, carro)
+                    c.execute("SELECT * FROM moradores WHERE Nome=? AND Carro=?", nome_carro)
+                    busca_mor = c.fetchone()
+                    try:
+                        if len(busca_mor) > 0:
+                            c.execute("UPDATE estacionamento set ocupante=? where numero =?",
+                                      (f"{busca_mor[1]} - {busca_mor[2]}", busca_est[0]))
+                            conn.commit()
+                            print("Morador adicionado com sucesso!")
+                    except TypeError:
+                        print("Morador não encontrado.")
+            except TypeError:
                 print("Não há estacionamento disponível no momento.")
-            else:
-                nome = input("Digite o nome do morador: ")
-                carro = input("Digite o carro do morador: ")
-                nome_carro = (nome, carro)
-                c.execute("SELECT * FROM moradores WHERE Nome=? AND Carro=?", nome_carro)
-                busca_mor = c.fetchone()
-                if busca_mor == None:
-                    print("Morador não encontrado.")
-                else:
-                    c.execute("UPDATE estacionamento set ocupante=? where numero =?",
-                              (busca_mor[1], busca_est[0]))
-                    conn.commit()
-                    c.execute("SELECT * FROM estacionamento INNER JOIN moradores ON "
-                              "estacionamento.ocupante = moradores.nome")
-                    resultado = c.fetchone()
-                    print(resultado)
         elif escolha == 2:
             bloco = (input("Digite o bloco do estacionamento: "), 'Estacionamento vago')
             c.execute("SELECT * FROM estacionamento WHERE bloco=? AND ocupante=?;", bloco)
             busca_est = c.fetchone()
-            if busca_est == None:
+            try:
+                if len(busca_est) > 0:
+                    nome = input("Digite o nome do visitante: ")
+                    carro = input("Digite o carro do visitante: ")
+                    nome_carro = (nome, carro)
+                    c.execute("SELECT * FROM visitantes WHERE Nome=? AND Carro=?", nome_carro)
+                    busca_vis = c.fetchone()
+                    try:
+                        if len(busca_vis) > 0:
+                            c.execute("UPDATE estacionamento set ocupante=? where numero =?",
+                                      (f"{busca_vis[1]} - {busca_vis[2]}", busca_est[0]))
+                            conn.commit()
+                            print("Visitante adicionado com sucesso!")
+                    except TypeError:
+                        print("Visitante não encontrado.")
+            except TypeError:
                 print("Não há estacionamento disponível no momento.")
-            else:
-                nome = input("Digite o nome do visitante: ")
-                carro = input("Digite o carro do visitante: ")
-                nome_carro = (nome, carro)
-                c.execute("SELECT * FROM visitantes WHERE Nome=? AND Carro=?", nome_carro)
-                busca_vis = c.fetchone()
-                if busca_vis == None:
-                    print("Visitante não encontrado.")
-                else:
-                    c.execute("UPDATE estacionamento set ocupante=? where numero =?",
-                              (busca_vis[1], busca_est[0]))
-                    conn.commit()
-                    c.execute("SELECT * FROM estacionamento INNER JOIN visitantes ON "
-                              "estacionamento.ocupante = visitantes.nome")
-                    resultado2 = c.fetchone()
-                    print(resultado2)
-        elif escolha == 3:
-            bloco = (input("Digite o bloco do estacionamento: "), 'Estacionamento vago')
-            c.execute("SELECT * FROM estacionamento WHERE bloco=? AND ocupante=?;", bloco)
-            busca_est = c.fetchone()
-            if busca_est == None:
-                print("Não há estacionamento disponível no momento.")
-            else:
-                nome = input("Digite o nome do funcionário: ")
-                carro = input("Digite o carro do funcionário: ")
-                nome_carro = (nome, carro)
-                c.execute("SELECT * FROM funcionarios WHERE Nome=? AND Carro=?", nome_carro)
-                busca_func = c.fetchone()
-
-                if busca_func == None:
-                    print("Funcionário não encontrado.")
-                else:
-                    c.execute("UPDATE estacionamento set ocupante=? where numero =?",
-                              (busca_func[1], busca_est[0]))
-                    conn.commit()
-                    c.execute("SELECT * FROM estacionamento INNER JOIN funcionarios ON "
-                              "estacionamento.ocupante = funcionarios.nome")
-                    resultado3 = c.fetchone()
-                    print(resultado3)
         else:
             print("Opção inválida.")
         conn.close()
@@ -182,7 +158,7 @@ class Estacionamento:
         c = conn.cursor()
         numero = int(input("Informe o numero da vaga: "))
         bloco = input("Informe o nome do Bloco: ")
-        parametro= (numero, bloco)
+        parametro = (numero, bloco)
         # trata o erro caso a tabela ainda não tenha sido criada
         try:
             c.execute("SELECT * FROM estacionamento WHERE numero=? and Bloco=?", parametro)
@@ -190,7 +166,7 @@ class Estacionamento:
             # trata o erro quando não houver nenhuma ocorrência com esses dados, nesses casos o
             # fetchone retorna None e pelas boas práticas não é correto passar None na comparação do IF
             try:
-                if len(busca) == 0:
+                if len(busca) > 0:
                     c.execute("DELETE FROM estacionamento where numero=? and Bloco =?", parametro)
                     conn.commit()
                     print("Estacionamento excluído com sucesso!")

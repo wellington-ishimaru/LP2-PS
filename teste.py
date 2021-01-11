@@ -3,9 +3,8 @@ import _sqlite3
 conn = _sqlite3.connect("Condominio.db")
 c = conn.cursor()
 
-c.execute("SELECT * FROM funcionarios ")
-resultado = c.fetchall()
-print(len(resultado))
+#c.execute("Drop table funcionarios")
+#conn.commit()
 #print(resultado[len(resultado)-1][0])
 """
 print("{:^15}".format("Numero vaga") +"|"+ "{:^15}".format("Bloco") +"|"+ "{:^15}".format("Nome") +"|"+ "{:^15}".format("Carro"))
