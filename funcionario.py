@@ -91,7 +91,7 @@ class Funcionario:
             # trata o erro caso não encontre nenhum dado, o c.fetchone retorná None
             # e pelas boas práticas, não é correto passar o tipo None na comparação do If.
             try:
-                if len(busca) == 0:
+                if len(busca) > 0:
                     c.execute("DELETE FROM funcionarios WHERE Nome=? and cargo =?", parametro)
                     conn.commit()
                     print("Funcionário excluído com sucesso!")

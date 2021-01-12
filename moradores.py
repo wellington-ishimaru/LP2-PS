@@ -75,3 +75,30 @@ class Moradores:
         else:
             print("Opcao invalida!")
         conn.close()
+
+    @staticmethod
+    def exclui_morador_bd():
+        conn = _sqlite3.connect("Condominio.db")
+        c = conn.cursor()
+        nome = input("Informe o nome do morador: ")
+        carro = input("Informe o carro do morador: ")
+        conn.commit()
+        parametro = (nome, carro)
+        # trata o erro caso a tabela ainda não tenha sido criada
+        try:
+            c.execute("SELECT * FROM moradores WHERE Nome=? and Carro=?", parametro)
+            busca = c.fetchone()
+            print(busca)
+            # trata o erro caso não encontre nenhum dado, o c.fetchone retorná None
+            # e pelas boas práticas, não é correto passar o tipo None na comparação do If.
+            try:
+                if len(busca) > 0:
+                    c.execute("DELETE FROM moradores WHERE Nome=? and Carro =?", parametro)
+                    conn.commit()
+                    print("Morador excluído com sucesso!")
+            except TypeError:
+                print(f"Morador nome: {nome} e carro: {carro} não encontrado.\n"
+                      f"Por favor, verifique os dados e tente novamente.")
+        except _sqlite3.Error:
+            print("Não foi encontrada nenhuma tabela.")
+        conn.close()
