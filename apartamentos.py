@@ -28,8 +28,8 @@ class Apartamentos:
         # trata duplicidade de dados
         try:
             c.execute("CREATE TABLE IF NOT EXISTS apartamentos (Numero INTEGER PRIMARY KEY"
-                      " AUTOINCREMENT, Bloco TEXT COLLATE NOCASE, Ocupante TEXT, UNIQUE (Numero, Bloco)"
-                      " FOREIGN KEY (Numero) REFERENCES moradores(ID))")
+                      " AUTOINCREMENT, Bloco TEXT COLLATE NOCASE, Ocupante TEXT COLLATE NOCASE, "
+                      "UNIQUE (Numero, Bloco) FOREIGN KEY (Numero) REFERENCES moradores(ID))")
             c.executemany("INSERT INTO apartamentos VALUES(null,?,?)", ap.apartamentos)
             conn.commit()
             print("Apartamentos criados com sucesso.")

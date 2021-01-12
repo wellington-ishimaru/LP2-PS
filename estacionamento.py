@@ -27,7 +27,7 @@ class Estacionamento:
         p = Estacionamento(qtde, bloco)
         # usando o collate nocase para deixar a busca sem caps sensitive
         c.execute("CREATE TABLE IF NOT EXISTS estacionamento (Numero INTEGER PRIMARY KEY "
-                  "AUTOINCREMENT, Bloco TEXT COLLATE NOCASE, Ocupante TEXT, FOREIGN KEY "
+                  "AUTOINCREMENT, Bloco TEXT COLLATE NOCASE, Ocupante TEXT COLLATE NOCASE, FOREIGN KEY "
                   "(Numero) REFERENCES moradores(ID), FOREIGN KEY (Numero) REFERENCES visitantes(Id),"
                   "FOREIGN KEY(Numero) REFERENCES funcionarios(ID), UNIQUE (Numero, Bloco) ON CONFLICT"
                   " ABORT);")
@@ -63,7 +63,7 @@ class Estacionamento:
                     try:
                         if len(busca_mor) > 0:
                             c.execute("UPDATE estacionamento set ocupante=? where numero =?",
-                                      (f"{busca_mor[1]} - {busca_mor[2]}", busca_est[0]))
+                                      (busca_mor[1], busca_est[0]))
                             conn.commit()
                             print("Morador adicionado com sucesso!")
                     except TypeError:
@@ -84,7 +84,7 @@ class Estacionamento:
                     try:
                         if len(busca_vis) > 0:
                             c.execute("UPDATE estacionamento set ocupante=? where numero =?",
-                                      (f"{busca_vis[1]} - {busca_vis[2]}", busca_est[0]))
+                                      (busca_vis[1], busca_est[0]))
                             conn.commit()
                             print("Visitante adicionado com sucesso!")
                     except TypeError:
@@ -141,8 +141,7 @@ class Estacionamento:
                     print("+" + "-" * 8 + "+" + "-" * 15 + "+" + "-" * 25 + "+")
                     for item in range(len(busca)):
                         print("|"+"{:^8}".format(busca[item][0]) + "|" + "{:^15}".format(busca[item][1]) +
-                              "|" + "{:^25}".format(
-                                busca[item][2]) + "|")
+                              "|" + "{:^25}".format(busca[item][2]) + "|")
                         print("+" + "-" * 8 + "+" + "-" * 15 + "+" + "-" * 25 + "+")
             except Error:
                 print("Não foi encontrada nenhuma tabela")

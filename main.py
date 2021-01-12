@@ -57,39 +57,48 @@ def pega_opcao():
             elif opcao == 3:
                 print("(1)Adicionar morador.")
                 print("(2)Alterar nome ou carro.")
-                print("(3)Excluir morador.")
+                print("(3)Mostrar moradores")
+                print("(4)Excluir morador.")
                 sub_opcao = int(input("Digite a opcao desejada: "))
                 if sub_opcao == 1:
                     Moradores.add_morador_bd()
                 elif sub_opcao == 2:
                     Moradores.altera_morador_bd()
                 elif sub_opcao == 3:
+                    Moradores.mostra_moradores()
+                elif sub_opcao == 4:
                     Moradores.exclui_morador_bd()
                 else:
                     print("Opção inválida!")
             elif opcao == 4:
                 print("(1)Adicionar funcionário.")
                 print("(2)Alterar funcionário.")
-                print("(3)Excluir funcionário.")
+                print("(3)Mostrar funcionário.")
+                print("(4)Excluir funcionário.")
                 sub_opcao = int(input("Digite a opcao desejada: "))
                 if sub_opcao == 1:
                     Funcionario.add_funcionario_bd()
                 elif sub_opcao == 2:
                     Funcionario.altera_funcionario_bd()
                 elif sub_opcao == 3:
+                    Funcionario.mostra_funcionarios()
+                elif sub_opcao == 4:
                     Funcionario.exclui_funcionario_bd()
                 else:
                     print("Opção Inválida!")
             elif opcao == 5:
                 print("(1)Adicionar visitante.")
                 print("(2)Alterar nome ou carro.")
-                print("(3)Excluir visitante.")
+                print("(3)Mostrar visitantes.")
+                print("(4)Excluir visitante.")
                 sub_opcao = int(input("Digite a opcao desejada: "))
                 if sub_opcao == 1:
                     Visitantes.add_visitante_bd()
                 elif sub_opcao == 2:
                     Visitantes.altera_visitante_bd()
                 elif sub_opcao == 3:
+                    Visitantes.mostra_visitantes()
+                elif sub_opcao == 4:
                     Visitantes.exclui_visitante_bd()
                 else:
                     print("Opção inválida!")

@@ -76,18 +76,37 @@ class Funcionario:
         conn.close()
 
     @staticmethod
+    def mostra_funcionarios():
+        conn = _sqlite3.connect("Condominio.db")
+        c = conn.cursor()
+        try:
+            c.execute("Select * from funcionarios")
+            busca = c.fetchall()
+            if busca == 0:
+                print("Não há ocorrências para busca solicitada.")
+            else:
+                print("+" + "-" * 8 + "+" + "-" * 15 + "+" + "-" * 15 + "+")
+                print("|" + "{:^8}".format("Id") + "|" + "{:^15}".format("Nome") +
+                      "|" + "{:^15}".format("Cargo") + "|")
+                print("+" + "-" * 8 + "+" + "-" * 15 + "+" + "-" * 15 + "+")
+                for item in range(len(busca)):
+                    print("|" + "{:^8}".format(busca[item][0]) + "|" + "{:^15}".format(busca[item][1])
+                          + "|" + "{:^15}".format(busca[item][2]) + "|")
+                    print("+" + "-" * 8 + "+" + "-" * 15 + "+" + "-" * 15 + "+")
+        except _sqlite3.Error:
+            print("Não foi encontrada a tabela!")
+
+    @staticmethod
     def exclui_funcionario_bd():
         conn = _sqlite3.connect("Condominio.db")
         c = conn.cursor()
         nome = input("Informe o nome do funcionário: ")
         cargo = input("Informe o cargo do funcionário: ")
-        conn.commit()
         parametro = (nome, cargo)
         # trata o erro caso a tabela ainda não tenha sido criada
         try:
             c.execute("SELECT * FROM funcionarios WHERE Nome=? and Cargo=?", parametro)
             busca = c.fetchone()
-            print(busca)
             # trata o erro caso não encontre nenhum dado, o c.fetchone retorná None
             # e pelas boas práticas, não é correto passar o tipo None na comparação do If.
             try:

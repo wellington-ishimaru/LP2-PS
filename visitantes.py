@@ -50,6 +50,7 @@ class Visitantes:
                 if len(busca) > 0:
                     novo_nome = (input("Digite o novo nome do visitante: "), nome_anterior[0])
                     c.execute("UPDATE visitantes set Nome=? where Nome=?", novo_nome)
+                    c.execute("Update estacionamento set Ocupante=? where Ocupante=?", novo_nome)
                     conn.commit()
                     print("Nome atualizado com sucesso!")
             except TypeError:
@@ -75,23 +76,44 @@ class Visitantes:
         conn.close()
 
     @staticmethod
+    def mostra_visitantes():
+        conn = _sqlite3.connect("Condominio.db")
+        c = conn.cursor()
+        try:
+            c.execute("Select * from visitantes")
+            busca = c.fetchall()
+            if busca == 0:
+                print("Não há ocorrências para busca solicitada.")
+            else:
+                print("+" + "-" * 8 + "+" + "-" * 15 + "+" + "-" * 15 + "+")
+                print("|" + "{:^8}".format("Id") + "|" + "{:^15}".format("Nome") +
+                      "|" + "{:^15}".format("Carro") + "|")
+                print("+" + "-" * 8 + "+" + "-" * 15 + "+" + "-" * 15 + "+")
+                for item in range(len(busca)):
+                    print("|" + "{:^8}".format(busca[item][0]) + "|" + "{:^15}".format(busca[item][1])
+                          + "|" + "{:^15}".format(busca[item][2]) + "|")
+                    print("+" + "-" * 8 + "+" + "-" * 15 + "+" + "-" * 15 + "+")
+        except _sqlite3.Error:
+            print("Não foi encontrada a tabela!")
+
+    @staticmethod
     def exclui_visitante_bd():
         conn = _sqlite3.connect("Condominio.db")
         c = conn.cursor()
         nome = input("Informe o nome do visitante: ")
         carro = input("Informe o carro do visitante: ")
-        conn.commit()
         parametro = (nome, carro)
         # trata o erro caso a tabela ainda não tenha sido criada
         try:
             c.execute("SELECT * FROM visitantes WHERE Nome=? and Carro=?", parametro)
             busca = c.fetchone()
-            print(busca)
             # trata o erro caso não encontre nenhum dado, o c.fetchone retorná None
             # e pelas boas práticas, não é correto passar o tipo None na comparação do If.
             try:
                 if len(busca) > 0:
                     c.execute("DELETE FROM visitantes WHERE Nome=? and Carro =?", parametro)
+                    c.execute("UPDATE estacionamento SET Ocupante=? WHERE Ocupante=?",
+                              ('Estacionamento vago', nome))
                     conn.commit()
                     print("Visitante excluído com sucesso!")
             except TypeError:

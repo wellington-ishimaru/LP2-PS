@@ -52,6 +52,7 @@ class Moradores:
                     novo_nome = (input("Digite o novo nome do morador: "), nome_anterior[0])
                     c.execute("UPDATE moradores set Nome=? where Nome=?", novo_nome)
                     c.execute("Update estacionamento set Ocupante=? where Ocupante=?", novo_nome)
+                    c.execute("Update apartamentos set Ocupante=? where Ocupante=?", novo_nome)
                     conn.commit()
                     print("Nome atualizado com sucesso!")
             except TypeError:
@@ -76,13 +77,35 @@ class Moradores:
             print("Opcao invalida!")
         conn.close()
 
+
+    @staticmethod
+    def mostra_moradores():
+        conn = _sqlite3.connect("Condominio.db")
+        c = conn.cursor()
+        try:
+            c.execute("Select * from moradores")
+            busca = c.fetchall()
+            if busca == 0:
+                print("Não há ocorrências para busca solicitada.")
+            else:
+                print("+" + "-" * 8 + "+" + "-" * 15 + "+" + "-" * 15 + "+")
+                print("|" + "{:^8}".format("Id") + "|" + "{:^15}".format("Nome") +
+                      "|" + "{:^15}".format("Carro") + "|")
+                print("+" + "-" * 8 + "+" + "-" * 15 + "+" + "-" * 15 + "+")
+                for item in range(len(busca)):
+                    print("|" + "{:^8}".format(busca[item][0]) + "|" + "{:^15}".format(busca[item][1])
+                          + "|" + "{:^15}".format(busca[item][2]) + "|")
+                    print("+" + "-" * 8 + "+" + "-" * 15 + "+" + "-" * 15 + "+")
+        except _sqlite3.Error:
+            print("Não foi encontrada a tabela!")
+
+
     @staticmethod
     def exclui_morador_bd():
         conn = _sqlite3.connect("Condominio.db")
         c = conn.cursor()
         nome = input("Informe o nome do morador: ")
         carro = input("Informe o carro do morador: ")
-        conn.commit()
         parametro = (nome, carro)
         # trata o erro caso a tabela ainda não tenha sido criada
         try:
@@ -94,6 +117,10 @@ class Moradores:
             try:
                 if len(busca) > 0:
                     c.execute("DELETE FROM moradores WHERE Nome=? and Carro =?", parametro)
+                    c.execute("UPDATE estacionamento set Ocupante=? where Ocupante=?",
+                              ('Estacionamento vago', nome))
+                    c.execute("UPDATE apartamentos set Ocupante=? where Ocupante=?",
+                              ('Apartamento vago', nome))
                     conn.commit()
                     print("Morador excluído com sucesso!")
             except TypeError:
