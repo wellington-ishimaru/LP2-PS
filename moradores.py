@@ -25,13 +25,26 @@ class Moradores:
         c = conn.cursor()
         nome = input("Digite o nome do morador: ")
         carro = input("Digite o carro do morador: ")
+        bloco_apt = (input("Digite o bloco do apartamento: "), "Apartamento vago")
+        bloco_est = (input("Digite o bloco do estacionamento: "), "Estacionamento vago")
         morador = Moradores(nome, carro)
-        try:  # trata a duplicidade de nomes
-            c.execute("INSERT INTO moradores VALUES(NULL,?,?)", morador.morador)
-            conn.commit()
-            print("Morador adicionado com sucesso!")
-        except _sqlite3.IntegrityError:
-            print("Morador já está cadastrado no sistema.")
+        try:
+            c.execute("SELECT * FROM apartamentos WHERE Bloco=? AND Ocupante=?", bloco_apt)
+            busca_apt = c.fetchone()
+            c.execute("SELECT * FROM estacionamento WHERE Bloco=? AND Ocupante=?", bloco_est)
+            busca_est = c.fetchone()
+            try:
+                if len(busca_apt) > 0 and len(busca_est) > 0:
+                    c.execute("INSERT INTO moradores VALUES(NULL,?,?)", morador.morador)
+                    c.execute("UPDATE apartamentos SET ocupante=? WHERE numero=?", (morador.morador[0], busca_apt[0]))
+                    c.execute("UPDATE estacionamento SET ocupante=? WHERE numero=?", (morador.morador[0], busca_est[0]))
+                    conn.commit()
+                    print(f"Morador {morador.morador[0]} adicionado com sucesso! Apartamento numero:{busca_apt[0]} "
+                          f"Estacionamento numero:{busca_est[0]}.")
+            except TypeError:
+                print("Desculpe, não há vagas no momento.")
+        except _sqlite3.OperationalError:
+            print("Dados incorretos, tente novamente.")
         conn.close()
 
     @staticmethod
@@ -77,7 +90,6 @@ class Moradores:
             print("Opcao invalida!")
         conn.close()
 
-
     @staticmethod
     def mostra_moradores():
         conn = _sqlite3.connect("Condominio.db")
@@ -98,7 +110,6 @@ class Moradores:
                     print("+" + "-" * 8 + "+" + "-" * 15 + "+" + "-" * 15 + "+")
         except _sqlite3.Error:
             print("Não foi encontrada a tabela!")
-
 
     @staticmethod
     def exclui_morador_bd():

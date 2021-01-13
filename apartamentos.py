@@ -61,7 +61,6 @@ class Apartamentos:
                     print("Morador não encontrado.")
         except TypeError:
             print("Não há apartamento disponível no momento.")
-
         conn.close()
 
     @staticmethod

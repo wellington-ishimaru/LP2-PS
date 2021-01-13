@@ -24,13 +24,23 @@ class Visitantes:
         c = conn.cursor()
         nome = input("Digite o nome do visitante: ")
         carro = input("Digite o carro do visitante: ")
+        bloco_est = (input("Digite o bloco do estacionamento: "), "Estacionamento vago")
         visitante = Visitantes(nome, carro)
-        try:  # trata a duplicidade de nomes
-            c.execute("INSERT INTO visitantes VALUES(NULL,?,?)", visitante.visitante)
-            conn.commit()
-            print("Visitante adicionado com sucesso!")
-        except _sqlite3.IntegrityError:
-            print("Visitante já está cadastrado no sistema.")
+        try:
+            c.execute("SELECT * FROM estacionamento WHERE Bloco=? AND Ocupante=?", bloco_est)
+            busca_est = c.fetchone()
+            try:
+                if len(busca_est) > 0:
+                    c.execute("INSERT INTO visitantes VALUES(NULL,?,?)", visitante.visitante)
+                    c.execute("UPDATE estacionamento SET ocupante=? WHERE numero=?",
+                              (visitante.visitante[0], busca_est[0]))
+                    conn.commit()
+                    print(f"Visitante {visitante.visitante[0]} adicionado com sucesso, "
+                          f"estacionamento numero:{busca_est[0]}.")
+            except TypeError:
+                print("Desculpe, não há vagas no momento.")
+        except _sqlite3.OperationalError:
+            print("Dados incorretos, tente novamente.")
         conn.close()
 
     @staticmethod
