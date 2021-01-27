@@ -10,8 +10,8 @@ Sistema para condomínios com o menu inicial a seguir:
 (0) Sair
 ************************************************************************
 As opções (1) e (2) são bem similares com relação ao funcionamento.
-Ao optar por ela o usuário visualiza um sub-menu, no exemplo 
-Abaixo com estacionamento:
+Ao optar por ela, o usuário visualiza um sub-menu, no exemplo 
+abaixo com estacionamento:
 (1) Criar estacionamento.
 (2) Mostrar estacionamento.
 (3) Excluir estacionamento.
