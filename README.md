@@ -35,7 +35,7 @@ E apartamento, só então conclui o cadastro. Ao criar, alterar ou excluir]
 As tabelas de apartamento e estacionamento são atualizadas automaticamente.
 **************************************************************************
 ##### A opção (5) cuida dos dados dos funcionários, realizando também as operações 
-##### bbásicas do CRUD.
+##### básicas do CRUD.
 **************************************************************************
 ##### As opções (9) e (0) retornam ao menu inicial e finalizam o 
 ##### programa, respectivamente.
