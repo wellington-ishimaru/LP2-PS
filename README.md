@@ -1,5 +1,5 @@
 # LP2-PS
-Projeto Semestral
+Projeto Semestral desenvolvido em python com integracao com o banco de dados Sqlite3
 Sistema para condomínios com o menu inicial a seguir:
 (1) Estacionamento
 (2) Apartamentos
