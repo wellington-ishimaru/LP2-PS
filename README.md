@@ -34,7 +34,7 @@ Ao adicionar um morador, o programa ja verifica se há vaga de estacionamento
 E apartamento, só então conclui o cadastro. Ao criar, alterar ou excluir]
 As tabelas de apartamento e estacionamento são atualizadas automaticamente.
 **************************************************************************
-##### A opção (5) cuida dos dados dos funcionários, realizando também as operações 
+##### A opção (5) cuida dos dados dos visitantes, realizando também as operações 
 ##### básicas do CRUD.
 **************************************************************************
 ##### As opções (9) e (0) retornam ao menu inicial e finalizam o 
